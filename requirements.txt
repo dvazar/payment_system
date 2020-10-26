@@ -1,0 +1,5 @@
+django==2.2.16
+djangorestframework==3.9.4
+psycopg2-binary==2.8.6
+orjson==3.4.1
+drf-orjson-renderer==1.1.4
