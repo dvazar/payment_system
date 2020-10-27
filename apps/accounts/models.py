@@ -37,7 +37,7 @@ class Account(TimeStampAbstract):
         ]
 
     @classmethod
-    def get_bank_account(cls):
+    def get_bank_account(cls) -> 'Account':
         account = cls.objects.get_or_create(
             account_number=uuid.UUID(settings.BANK_ACCOUNT_ID),
             defaults={
@@ -47,7 +47,7 @@ class Account(TimeStampAbstract):
         return account
 
     @classmethod
-    def create_new_account(cls):
+    def create_new_account(cls) -> 'Account':
         account = cls.objects.create()
         return account
 

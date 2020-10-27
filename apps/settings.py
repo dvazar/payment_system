@@ -1,7 +1,8 @@
 """
 Django settings for payment_system project.
 """
-
+import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -9,10 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y*=bdquxe8$!thh$(um$g5tv09@$i6+b_3f31*d+$g^!rfp3@z'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'false').lower() == 'true'
 
 ALLOWED_HOSTS = []
 
@@ -28,18 +29,20 @@ DJANGO_APPS = (
     'django.contrib.staticfiles',
 )
 
-SYSTEM_APPS = (
+THIRD_PARTY_APPS = (
+    'rest_framework',
+)
+
+LOCAL_APPS = (
     'apps.accounts.apps.AccountConfig',
     'apps.transfers.apps.TransferConfig',
     'apps.users.apps.UserConfig',
 )
 
-THIRD_PARTY_APPS = ()
-
 INSTALLED_APPS = [
     *DJANGO_APPS,
     *THIRD_PARTY_APPS,
-    *SYSTEM_APPS,
+    *LOCAL_APPS,
 ]
 
 MIDDLEWARE = [
@@ -50,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.utils.middleware.DomainExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'apps.urls'
@@ -71,22 +75,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'payment_system.wsgi.application'
+WSGI_APPLICATION = 'apps.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(conn_max_age=500),
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -104,9 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -117,9 +109,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
