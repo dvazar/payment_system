@@ -38,7 +38,7 @@ class Account(TimeStampAbstract):
 
     @classmethod
     def get_bank_account(cls) -> 'Account':
-        account = cls.objects.get_or_create(
+        account, created = cls.objects.get_or_create(
             account_number=uuid.UUID(settings.BANK_ACCOUNT_ID),
             defaults={
                 'balance': decimal.Decimal(str(settings.BANK_BALANCE)),

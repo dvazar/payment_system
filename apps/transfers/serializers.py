@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from ..users import models as user_models
+from ..utils.fields import CustomPrimaryKey
 
 from . import models, services
 
@@ -8,20 +9,20 @@ from . import models, services
 class User2UserTransferSerializer(serializers.ModelSerializer):
     """"""
 
-    debit_user = serializers.RelatedField(
-        queryset=user_models.User.objects.filter(
-            wallet_id__isnull=False,
-        ).select_related(
+    debit_user = CustomPrimaryKey(
+        queryset=user_models.User.objects.select_related(
             'wallet',
         ),
         write_only=True,
     )
-    transaction_id = serializers.ReadOnlyField()
 
     class Meta:
         model = models.FundsMovement
         fields = (
-            'debit_user', 'amount', 'transaction_id',
+            'debit_user', 'amount', 'transaction_id', 'created_at',
+        )
+        read_only_fields = (
+            'transaction_id', 'created_at',
         )
 
     def create(self, validated_data):
@@ -36,12 +37,13 @@ class User2UserTransferSerializer(serializers.ModelSerializer):
 class ReplenishmentFundsSerializer(serializers.ModelSerializer):
     """"""
 
-    transaction_id = serializers.ReadOnlyField()
-
     class Meta:
         model = models.FundsMovement
         fields = (
-            'amount', 'transaction_id',
+            'amount', 'transaction_id', 'created_at',
+        )
+        read_only_fields = (
+            'transaction_id', 'created_at',
         )
 
     def create(self, validated_data):
@@ -55,12 +57,13 @@ class ReplenishmentFundsSerializer(serializers.ModelSerializer):
 class WithdrawingFoundsSerializer(serializers.ModelSerializer):
     """"""
 
-    transaction_id = serializers.ReadOnlyField()
-
     class Meta:
         model = models.FundsMovement
         fields = (
-            'amount', 'transaction_id',
+            'amount', 'transaction_id', 'created_at',
+        )
+        read_only_fields = (
+            'transaction_id', 'created_at',
         )
 
     def create(self, validated_data):

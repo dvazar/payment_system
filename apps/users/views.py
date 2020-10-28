@@ -8,10 +8,10 @@ class UserViewSet(
     viewsets.GenericViewSet,
 ):
     """
-    User endpoint.
+    Endpoint for registering a new user.
     """
 
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (~permissions.IsAuthenticated,)

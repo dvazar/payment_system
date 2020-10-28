@@ -12,7 +12,6 @@ class User(AbstractUser):
     wallet = models.OneToOneField(
         to='accounts.Account',
         on_delete=models.PROTECT,
-        null=True,
         help_text='Wallet',
     )
 
