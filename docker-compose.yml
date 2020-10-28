@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  payment-system:
+    container_name: payment-system.local
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    environment:
+      DJANGO_SETTINGS_MODULE: apps.settings
+      DJANGO_SECRET_KEY: secret_key
+      DATABASE_URL: postgresql://debug:debug@postgres/payment_system
+    ports:
+      - 8000:80
+    command: gunicorn apps.wsgi -b 0.0.0.0:80 -c gunicorn.ini
+    networks:
+      - default
+
+  postgres:
+    restart: unless-stopped
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: payment_system
+      POSTGRES_USER: debug
+      POSTGRES_PASSWORD: debug
+
+volumes:
+  postgres_data: {}
+  postgres_data_backups: {}
