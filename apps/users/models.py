@@ -33,3 +33,14 @@ class User(AbstractUser):
             wallet=Account.create_new_account(),
         )
         return user
+
+    def get_locked_wallet(self, nowait=False) -> Account:
+        """
+        Returns the locked user's wallet.
+        """
+        wallet = Account.objects.select_for_update(
+            nowait=nowait,
+        ).get(
+            user=self,
+        )
+        return wallet

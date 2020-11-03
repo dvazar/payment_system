@@ -10,9 +10,7 @@ class User2UserTransferSerializer(serializers.ModelSerializer):
     """"""
 
     debit_user = CustomPrimaryKey(
-        queryset=user_models.User.objects.select_related(
-            'wallet',
-        ),
+        queryset=user_models.User.objects.all(),
         write_only=True,
     )
 

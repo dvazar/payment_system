@@ -37,13 +37,26 @@ class Account(TimeStampAbstract):
         ]
 
     @classmethod
-    def get_bank_account(cls) -> 'Account':
-        account, created = cls.objects.get_or_create(
-            account_number=uuid.UUID(settings.BANK_ACCOUNT_ID),
-            defaults={
-                'balance': decimal.Decimal(str(settings.BANK_BALANCE)),
-            },
-        )
+    def get_bank_account(cls, nowait=False) -> 'Account':
+
+        account_number = uuid.UUID(settings.BANK_ACCOUNT_ID)
+
+        def get_account():
+            return cls.objects.select_for_update(
+                nowait=nowait,
+            ).get(
+                account_number=account_number,
+            )
+
+        try:
+            account = get_account()
+        except cls.DoesNotExist:
+            cls.objects.create(
+                account_number=account_number,
+                balance=decimal.Decimal(str(settings.BANK_BALANCE)),
+            )
+            account = get_account()
+
         return account
 
     @classmethod
